@@ -11,9 +11,9 @@
 set -euo pipefail
 
 if [ $# -eq 1 ]; then
-  find "${XDG_RUNTIME_DIR:-${TMPDIR}nvim.${USER}}"/*/nvim.*.0 | while read -r server; do
-    nvim --server "$server" --remote-send "$1"
-  done
+	find "${XDG_RUNTIME_DIR:-${TMPDIR}nvim.${USER}}"/*/nvim.*.0 | while read -r server; do
+		nvim --server "$server" --remote-send "$1" >/dev/null 2>&1
+	done
 else
-  exit 1
+	exit 1
 fi
