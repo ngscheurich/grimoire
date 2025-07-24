@@ -1,12 +1,14 @@
 #!/bin/bash
 #
-# Usage: theme.sh [options]
+# Usage: theme.sh [flags] <theme>
+# Changes the system theme. Requires that the `themes` directory is
+# present. With no <theme>, prompts the user for a theme to apply.
 #
-# Changes the system theme. Requires that the `themes` directory is present.
-# With no options, prompts the user for a theme to apply.
+# Arguments:
+#     <theme>    Name of the theme
 #
-# Options:
-#   -t, --theme    Theme to apply
+# Flags:
+#     -h, --help    Show the help message
 #
 
 set -euo pipefail
@@ -22,21 +24,58 @@ THEME_LINK="$HOME/.theme"
 ensure "gum"
 ensure "osascript"
 
-if [ ! -d "$GRIMOIRE" ]; then
-  echo "Grimoire not found"
-  exit 1
-fi
+if [ ! -d "$GRIMOIRE" ]; then raise "Grimoire not found"; fi
+if [ ! -d "$THEMES" ]; then raise "themes directory not found"; fi
 
-if [ ! -d "$THEMES" ]; then
-  gum log -l fatal "themes directory not found"
-  exit
-fi
+usage() {
+	cat <<-"EOF"
+		Usage: theme.sh [flags] <theme>
 
-THEME="$(gum choose "$(basename -a "$THEMES"/*)")"
+		Changes the system theme. Requires that the `themes` directory is
+		present. With no <theme>, prompts the user for a theme to apply.
+
+		Arguments:
+		    <theme>    Name of the theme
+
+		Flags:
+		    -h, --help    Show the help message
+	EOF
+}
+
+declare theme
+
+# Parse options
+while [ $# -gt 0 ]; do
+	case "$1" in
+	-h | --help)
+		usage
+		exit 0
+		;;
+	-*)
+		usage
+		echo ""
+		raise_flag "$1"
+		;;
+	*)
+		if [ -z "$theme" ]; then
+			theme="$1"
+		else
+			usage
+			echo ""
+			raise_flag "$1"
+		fi
+		shift
+		;;
+	esac
+done
+
+if [ -z "$theme" ]; then
+	theme="$(fd . "$XDG_DATA_HOME/themes" -t d -d 1 | xargs basename -a | gum choose)"
+fi
 
 # Create symlink to chosen theme
 if [ -d "$THEME_LINK" ]; then rm "$THEME_LINK"; fi
-eval "ln -s ${THEMES}/$THEME $THEME_LINK"
+eval "ln -s ${THEMES}/$theme $THEME_LINK"
 
 # Reload Ghotty config
 osascript -e 'tell application "System Events" to keystroke "," using {command down, shift down}'
