@@ -1,4 +1,5 @@
 #!/usr/bin/env elixir
+# shellcheck disable=all
 
 defmodule NvimPlugins do
   @moduledoc """
