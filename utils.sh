@@ -23,14 +23,14 @@ BOLD="\033[1m"
 RESET="\033[0m"
 
 ensure() {
-  if ! which "$1" >/dev/null; then
+  if ! command -v "$1" >/dev/null 2>&1; then
     echo -e "${BOLD}${MAGENTA}FATAL${RESET} ${BOLD}$1${RESET} not available"
     exit 1
   fi
 }
 
 log() {
-  if which gum >/dev/null; then
+  if command -v gum >/dev/null 2>&1; then
     level="$1"
     shift
     gum log --structured -l "$level" "$@"
