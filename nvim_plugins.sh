@@ -2,11 +2,11 @@
 
 defmodule NvimPlugins do
   @moduledoc """
-  Adds plugin information to my Neovim README.
+  Adds plugin information to my Neovim README.md.
   """
 
-  @xdg_config_home System.get_env("XDG_CONFIG_HOME")
-  @nvim_config_path "#{@xdg_config_home}/nvim"
+  @xdg_data_home System.get_env("XDG_DATA_HOME")
+  @nvim_config_path "#{@xdg_data_home}/chezmoi/home/dot_config/nvim"
   @readme_path "#{@nvim_config_path}/README.md"
   @specs_path "#{@nvim_config_path}/lua/ngs/specs"
   @metadata_line_count 7
