@@ -45,4 +45,11 @@ raise() {
 	log fatal "$@"
 	exit 1
 }
+
+raise_flag() {
+	# Strip leading dashes
+	# shellcheck disable=SC2001
+	flag="$(echo "$1" | sed 's/^-*//g')"
+	log fatal "Unknown flag" flag "$flag"
+	exit 1
 }
