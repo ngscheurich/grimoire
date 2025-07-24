@@ -11,5 +11,5 @@ set -euo pipefail
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 TIME=$(date +%s%3N)
 
-git switch --create "fuckup-insurance-$TIME--$BRANCH"
+git switch --create "fuckup-insurance-${TIME}__${BRANCH}"
 git switch -
