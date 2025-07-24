@@ -23,25 +23,26 @@ BOLD="\033[1m"
 RESET="\033[0m"
 
 ensure() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo -e "${BOLD}${MAGENTA}FATAL${RESET} ${BOLD}$1${RESET} not available"
-    exit 1
-  fi
+	if ! command -v "$1" >/dev/null 2>&1; then
+		echo -e "${BOLD}${MAGENTA}FATAL${RESET} ${BOLD}$1${RESET} not available"
+		exit 1
+	fi
 }
 
 log() {
-  if command -v gum >/dev/null 2>&1; then
-    level="$1"
-    shift
-    gum log --structured -l "$level" "$@"
-  else
-    local level="$1"
-    shift
-    echo -ne "[${BOLD}${BLUE}$level]${RESET}" "$@"
-  fi
+	if command -v gum >/dev/null 2>&1; then
+		level="$1"
+		shift
+		gum log --structured -l "$level" "$@"
+	else
+		local level="$1"
+		shift
+		echo -ne "[${BOLD}${BLUE}$level]${RESET}" "$@"
+	fi
 }
 
 raise() {
-  log fatal "$@"
-  exit 1
+	log fatal "$@"
+	exit 1
+}
 }

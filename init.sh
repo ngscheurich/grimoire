@@ -13,9 +13,9 @@ LINK="$HOME/.local/bin/grim"
 
 # Clone repo
 if [ -d "$DEST" ]; then
-  echo "👻 Nothing happens..."
+	echo "👻 Nothing happens..."
 else
-  git clone "$REPO" "$DEST"
+	git clone "$REPO" "$DEST"
 fi
 
 # Create symlink
