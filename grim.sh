@@ -14,6 +14,11 @@
 
 set -euo pipefail
 
+# shellcheck disable=SC1091
+source "${XDG_DATA_HOME:-$HOME/.local/share}/grimoire/utils.sh"
+
+ensure "gum"
+
 GRIMOIRE="${XDG_DATA_HOME:-$HOME/.local/share}/grimoire"
 
 if [ ! -d "$GRIMOIRE" ]; then
@@ -21,7 +26,7 @@ if [ ! -d "$GRIMOIRE" ]; then
   exit 1
 fi
 
-if ! which gum >/dev/null; then
+if ! command -v gum >/dev/null 2>&1; then
   echo "Gum not found"
   exit 1
 fi
@@ -39,16 +44,6 @@ Arguments:
 Flags:
   -h, --help    Show the help message
 EOF
-}
-
-if ! which gum >/dev/null; then
-  echo "Gum not found"
-  exit 1
-fi
-
-raise() {
-  gum log -l fatal "$1"
-  exit 1
 }
 
 scriptname=""
@@ -71,14 +66,16 @@ while [ $# -gt 0 ]; do
     ;;
   -*)
     docs
-    raise "Unknown flag: $1"
+    log fatal "Unknown flag" flag "$1"
+    exit 1
     ;;
   *)
     if [ -z "$scriptname" ]; then
       scriptname=$1
     else
       docs
-      raise "Unknown flag: $1"
+      log fatal "Unknown flag" flag "$1"
+      exit 1
     fi
     shift
     ;;
