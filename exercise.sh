@@ -9,8 +9,11 @@
 # Flags:
 #	Additional flage to pass to the exercism CLI.
 #
-#  Opens the specified Exercism exercise in Neovim. Downloads it first
-#  if necessary.
+#  Creates a new tmux window for the exercise. It is split vertically
+#  into two panes:
+#
+#  1. 70% height; Neovim with README.md and source file tab pages
+#  2. 30% height; test command
 #
 
 set -euo pipefail
@@ -26,6 +29,7 @@ EXERCISE="$1"
 shift
 
 EXERCISE_DIR="$HOME/Exercism/$TRACK/$EXERCISE"
+WINNAME="{} $(basename "$EXERCISE_DIR")"
 
 if [ ! -d "$EXERCISE_DIR" ]; then
 	gum spin --title="Downloading $TRACK/$EXERCISE..." -- \
@@ -38,12 +42,18 @@ fi
 cd "$EXERCISE_DIR"
 ls
 
-FILES="README.md"
+files="README.md"
+declare testcmd
 
 case "$TRACK" in
 gleam)
-	FILES="$FILES $(find src -type f | head -n 1)"
+	files="$files $(find src -type f | head -n 1)"
+	testcmd="watchexec -c -w src gleam test"
 	;;
 esac
 
-eval "nvim -p $FILES"
+tmux new-window -c "$EXERCISE_DIR" -n "$WINNAME"
+tmux split-window -v -l 30%
+tmux send -t 1 "nvim -p $files" Enter
+tmux send -t 2 "$testcmd" Enter
+tmux select-pane -t 1
