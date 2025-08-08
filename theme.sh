@@ -19,7 +19,7 @@ source "${XDG_DATA_HOME:-$HOME/.local/share}/grimoire/utils.sh"
 DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 GRIMOIRE="$DATA_HOME/grimoire"
 THEMES="$DATA_HOME/themes"
-THEME_LINK="$HOME/.theme"
+OUTDIR="$HOME/.theme"
 
 ensure "gum"
 ensure "osascript"
@@ -73,15 +73,24 @@ if [ -z "$theme" ]; then
 	theme="$(fd . "$XDG_DATA_HOME/themes" -t d -d 1 | xargs basename -a | gum choose)"
 fi
 
-# Create symlink to chosen theme
-if [ -d "$THEME_LINK" ]; then rm "$THEME_LINK"; fi
-eval "ln -s ${THEMES}/$theme $THEME_LINK"
+templates_dir="${THEMES}/$theme/templates"
+
+# Render theme templates
+gomplate --context palette="${THEMES}/${theme}/palette.toml" \
+	--file "${templates_dir}/ghostty.tmpl" \
+	--out "${OUTDIR}/ghostty" \
+	--file "${templates_dir}/shell.fish.tmpl" \
+	--out "${OUTDIR}/shell.fish" \
+	--file "${templates_dir}/theme.lua.tmpl" \
+	--out "${OUTDIR}/nvim/lua/ngs/theme.lua" \
+	--file "${templates_dir}/tmux.sh.tmpl" \
+	--out "${OUTDIR}/tmux.sh"
 
 # Reload Ghotty config
 osascript -e 'tell application "System Events" to keystroke "," using {command down, shift down}'
 
-# Set Tmux theme
-"${THEME_LINK}/tmux.sh"
+# Load Tmux theme
+"${OUTDIR}/tmux.sh"
 
 # Load theme in all Neovim instances
-"$GRIMOIRE/nvim_send.sh" "<Cmd>lua require('ngs.util').reload_theme(true)<CR>"
+"${GRIMOIRE}/nvim_send.sh" "<Cmd>lua require('ngs.util').reload_theme(true)<CR>"
