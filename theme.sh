@@ -81,7 +81,7 @@ gomplate --context palette="${THEMES}/${theme}/palette.toml" \
 	--out "${OUTDIR}/ghostty" \
 	--file "${templates_dir}/shell.fish.tmpl" \
 	--out "${OUTDIR}/shell.fish" \
-	--file "${templates_dir}/theme.lua.tmpl" \
+	--file "${templates_dir}/nvim.lua.tmpl" \
 	--out "${OUTDIR}/nvim/lua/ngs/theme.lua" \
 	--file "${templates_dir}/tmux.sh.tmpl" \
 	--out "${OUTDIR}/tmux.sh"
