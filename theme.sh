@@ -86,7 +86,7 @@ gomplate --context palette="${THEMES}/${theme}/palette.toml" \
 	--file "${templates_dir}/tmux.sh.tmpl" \
 	--out "${OUTDIR}/tmux.sh"
 
-# Reload Ghotty config
+# Reload Ghostty config
 osascript -e 'tell application "System Events" to keystroke "," using {command down, shift down}'
 
 # Load Tmux theme
