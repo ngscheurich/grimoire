@@ -1,6 +1,6 @@
 # Grimoire
 
-Can you hear that? _Shell scripts._ Myriad incantations to perform all manner of mundane task abound. Are you prepared?
+Can you hear that? _Shell scripts._ Myriad incantations to perform all manner of mundane task abound.
 
 ## Quickstart
 
