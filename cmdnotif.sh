@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: cmdnotif.sh [flags] <command>
+# Usage: cmdnotif.sh <command>
 #
 # Arguments:
 #	<command>    Command to run
@@ -13,7 +13,7 @@ set -euo pipefail
 
 usage() {
 	cat <<-"EOF"
-		Usage: cmdnotif.sh [flags] <command>
+		Usage: cmdnotif.sh <command>
 
 		Arguments:
 		  <command>    Command to run
