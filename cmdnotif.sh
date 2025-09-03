@@ -11,9 +11,6 @@
 
 set -euo pipefail
 
-# shellcheck disable=SC1091
-source "${XDG_DATA_HOME:-$HOME/.local/share}/grimoire/utils.sh"
-
 usage() {
 	cat <<-"EOF"
 		Usage: cmdnotif.sh [flags] <command>
