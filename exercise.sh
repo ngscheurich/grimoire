@@ -18,10 +18,22 @@
 
 set -euo pipefail
 
-# shellcheck disable=SC1091
-source "${XDG_DATA_HOME:-$HOME/.local/share}/grimoire/utils.sh"
+if [ -z "${1+x}" ]; then
+	cat <<-EOF
+		Usage: exercise.sh <track> <exercise> [flags]
 
-ensure "gum"
+		Arguments:
+		  <track>       Language track
+		  <exercise>    Exercise name
+
+		Flags:
+		  Additional flage to pass to the exercism CLI.
+
+		 Creates a new tmux window for the exercise. It is split vertically
+		 into two panes:
+	EOF
+	exit 0
+fi
 
 track="$1"
 shift
@@ -40,7 +52,6 @@ if [ ! -d "$EXERCISE_DIR" ]; then
 fi
 
 cd "$EXERCISE_DIR"
-ls
 
 files="README.md"
 declare testcmd
@@ -53,7 +64,7 @@ gleam)
 esac
 
 tmux new-window -c "$EXERCISE_DIR" -n "$WINNAME"
-tmux split-window -v -l 30%
+tmux split-window -h -l 40%
 tmux send -t 1 "nvim -p $files" Enter
 tmux send -t 2 "$testcmd" Enter
 tmux select-pane -t 1
