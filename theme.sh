@@ -90,7 +90,7 @@ gomplate --context palette="${THEMES}/${theme}/palette.toml" \
 osascript -e 'tell application "System Events" to keystroke "," using {command down, shift down}'
 
 # Load Tmux theme
-"${OUTDIR}/tmux.sh"
+tmux has-session >/dev/null 2>&1 && "${OUTDIR}/tmux.sh"
 
 # Load theme in all Neovim instances
 "${GRIMOIRE}/nvim_send.sh" "<Cmd>lua require('ngs.util').reload_theme(true)<CR>"
