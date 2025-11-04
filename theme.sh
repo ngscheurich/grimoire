@@ -22,7 +22,6 @@ THEMES="$DATA_HOME/themes"
 OUTDIR="$HOME/.theme"
 
 ensure "gum"
-ensure "osascript"
 
 if [ ! -d "$GRIMOIRE" ]; then raise "Grimoire not found"; fi
 if [ ! -d "$THEMES" ]; then raise "themes directory not found"; fi
@@ -42,7 +41,7 @@ usage() {
 	EOF
 }
 
-declare theme
+theme=""
 
 # Parse options
 while [ $# -gt 0 ]; do
@@ -87,7 +86,10 @@ gomplate --context palette="${THEMES}/${theme}/palette.toml" \
 	--out "${OUTDIR}/tmux.sh"
 
 # Reload Ghostty config
-osascript -e 'tell application "System Events" to keystroke "," using {command down, shift down}'
+if [ "$(uname)" = "Darwin" ]; then
+	ensure "osascript"
+	osascript -e 'tell application "System Events" to keystroke "," using {command down, shift down}'
+fi
 
 # Load Tmux theme
 tmux has-session >/dev/null 2>&1 && "${OUTDIR}/tmux.sh"
