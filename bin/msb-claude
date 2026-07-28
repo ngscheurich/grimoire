@@ -11,7 +11,7 @@
 # --net-rule egress routes, -v mounts, or --cpus.
 #
 # Environment variables:
-#   MSB_IMAGE      microsandbox image (default: debian)
+#   MSB_SNAPSHOT   microsandbox snapshot (default: devbox)
 #   MSB_WORKTREE   Directory to mount at /mnt/worktree (default: $PWD)
 #
 # The Claude Code OAuth token is read from $SPIRIT_CLAUDE_CODE_OAUTH_TOKEN.
@@ -19,12 +19,12 @@
 # Examples:
 #   msb-claude
 #   msb-claude --net-rule allow@registry.npmjs.org
-#   env MSB_WORKTREE="~/code/app" msb-claude --cpus 4
-#   env MSB_IMAGE="images/dev" msb-claude --net-rule allow@example.com -v /data:/data
+#   env MSB_WORKTREE="~/code/myapp" msb-claude --cpus 4
+#   env MSB_SNAPSHOT="myapp" msb-claude --net-rule allow@example.com -v /data:/data
 
 set -euo pipefail
 
-image="${MSB_IMAGE:-debian}"
+snapshot="${MSB_SNAPSHOT:-debian}"
 worktree="${MSB_WORKTREE:-$PWD}"
 
 # msb resolves --secret values from its own environment at start time; inline
@@ -49,7 +49,7 @@ fi
 
 # msb run argv; trailing "$@" forwards extra args to msb
 msb_args=(
-  run "$image"
+  run --from-snapshot "$snapshot"
   --net-default-egress deny
   --net-rule allow@api.anthropic.com
   --net-rule allow@claude.ai
