@@ -11,22 +11,25 @@
 # --net-rule egress routes, -v mounts, or --cpus.
 #
 # Environment variables:
-#   IMAGE      microsandbox image (default: localhost/spiritualism)
-#   WORKTREE   Directory to mount at /mnt/worktree (default: $PWD)
+#   MSB_IMAGE      microsandbox image (default: debian)
+#   MSB_WORKTREE   Directory to mount at /mnt/worktree (default: $PWD)
 #
 # The Claude Code OAuth token is read from $SPIRIT_CLAUDE_CODE_OAUTH_TOKEN.
 #
 # Examples:
 #   msb-claude
 #   msb-claude --net-rule allow@registry.npmjs.org
-#   env WORKTREE="~/code/app" msb-claude --cpus 4
-#   env IMAGE="images/dev" msb-claude --net-rule allow@example.com -v /data:/data
+#   env MSB_WORKTREE="~/code/app" msb-claude --cpus 4
+#   env MSB_IMAGE="images/dev" msb-claude --net-rule allow@example.com -v /data:/data
 
 set -euo pipefail
 
-image="${IMAGE:-localhost/spiritualism}"
-token="$SPIRIT_CLAUDE_CODE_OAUTH_TOKEN"
-worktree="${WORKTREE:-$PWD}"
+image="${MSB_IMAGE:-debian}"
+worktree="${MSB_WORKTREE:-$PWD}"
+
+# msb resolves --secret values from its own environment at start time; inline
+# `ENV=VALUE@HOST` is rejected so the token never lands in the sandbox config.
+export CLAUDE_CODE_OAUTH_TOKEN="$SPIRIT_CLAUDE_CODE_OAUTH_TOKEN"
 
 # Guest shim
 guest_script="$(
@@ -58,7 +61,7 @@ msb_args=(
   --net-rule allow@codeload.github.com
   --net-rule allow@objects.githubusercontent.com
   --net-rule allow@raw.githubusercontent.com
-  --secret "CLAUDE_CODE_OAUTH_TOKEN=$token@api.anthropic.com"
+  --secret "CLAUDE_CODE_OAUTH_TOKEN@api.anthropic.com"
   "${mount_args[@]}"
   "$@"
   -- bash -lc "$guest_script" bash
