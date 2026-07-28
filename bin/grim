@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-# Usage:
-#	grim [flags] <script>
+# Executes a grimoire script. If no <script> is provided, a script chooser will
+# be shown.
 #
-# Executes a grimoire script. If no <script> is provided, a script
-# chooser will be shown.
+# Usage:
+#	  grim [flags] <script>
 #
 # Arguments:
-#	<script>   Name of the script (sans extension)
+#	  <script>   Name of the script
 #
 # Flags:
 #   -h, --help   Show the help message

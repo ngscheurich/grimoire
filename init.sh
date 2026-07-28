@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Usage: init.sh
-#
 # Clones the Grimoire repo and creates a `grim` command.
+#
+# Usage: init.sh
 
 set -euo pipefail
 

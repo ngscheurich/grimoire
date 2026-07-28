@@ -1,6 +1,6 @@
 # Grimoire
 
-Can you hear that? _Shell scripts._ Myriad incantations to perform all manner of mundane task abound.
+Can you hear that? _Shell scripts._ Myriad incantations for your command-line.
 
 ## Quickstart
 
@@ -19,10 +19,15 @@ Executes a grimoire script. If no <script> is provided, a script
 chooser will be shown.
 
 Arguments:
-  <script>    Name of the script (sans extension)
+  <script>    Name of the script
 
 Flags:
   -h, --help    Show the help message
 ```
 
-Use this power wisely.
+> [!IMPORTANT] Be forewarned
+> Some of these scripts require [gum] on your PATH.
+
+Use this power wisely, or don't.
+
+[gum]: https://github.com/charmbracelet/gum
