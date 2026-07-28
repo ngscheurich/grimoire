@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+#	Launches a microsandbox microVM with a sensible network egress allowlist and
+#	OAuth wire-substitution for Claude Code login.
+#
+# Usage:
+#   msb-claude [msb-run-arg]...
+#
+# Any additional arguments are forwarded verbatim to `msb run`, after the
+# built-in defaults, so they can extend or override them — e.g. extra
+# --net-rule egress routes, -v mounts, or --cpus.
+#
+# Environment variables:
+#   IMAGE      microsandbox image (default: localhost/spiritualism)
+#   WORKTREE   Directory to mount at /mnt/worktree (default: $PWD)
+#
+# The Claude Code OAuth token is read from $SPIRIT_CLAUDE_CODE_OAUTH_TOKEN.
+#
+# Examples:
+#   msb-claude
+#   msb-claude --net-rule allow@registry.npmjs.org
+#   env WORKTREE="~/code/app" msb-claude --cpus 4
+#   env IMAGE="images/dev" msb-claude --net-rule allow@example.com -v /data:/data
+
+set -euo pipefail
+
+image="${IMAGE:-localhost/spiritualism}"
+token="$SPIRIT_CLAUDE_CODE_OAUTH_TOKEN"
+worktree="${WORKTREE:-$PWD}"
+
+# Guest shim
+guest_script="$(
+  cat <<'GUEST'
+export TERM=xterm-256color TERM_PROGRAM=kitty CLAUDE_CODE_NO_FLICKER=1
+if [ -d /mnt/worktree ]; then cd /mnt/worktree; else cd "$HOME"; fi
+printf '{"installMethod":"native","hasCompletedOnboarding":true,"projects":{"%s":{"hasTrustDialogAccepted":true}}}\n' "$PWD" > "$HOME/.claude.json"
+exec claude
+GUEST
+)"
+
+# Optional host mount
+mount_args=()
+if [[ -n "$worktree" ]]; then
+  mount_args=(-v "$worktree:/mnt/worktree")
+fi
+
+# msb run argv; trailing "$@" forwards extra args to msb
+msb_args=(
+  run "$image"
+  --net-default-egress deny
+  --net-rule allow@api.anthropic.com
+  --net-rule allow@claude.ai
+  --net-rule allow@platform.claude.com
+  --net-rule allow@proxy.golang.org
+  --net-rule allow@sum.golang.org
+  --net-rule allow@repo.hex.pm
+  --net-rule allow@github.com
+  --net-rule allow@codeload.github.com
+  --net-rule allow@objects.githubusercontent.com
+  --net-rule allow@raw.githubusercontent.com
+  --secret "CLAUDE_CODE_OAUTH_TOKEN=$token@api.anthropic.com"
+  "${mount_args[@]}"
+  "$@"
+  -- bash -lc "$guest_script" bash
+)
+
+exec msb "${msb_args[@]}"
