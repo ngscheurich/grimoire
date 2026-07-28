@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+#	Symlinks Grimoire scripts into ~/.local/bin.
+#
+# Usage:
+#   link
+#
+# Idempotent: refreshes symlinks that point elsewhere, leaves correct ones
+# untouched, and skips real files so it never clobbers a non-symlink.
+
+set -euo pipefail
+
+# shellcheck disable=SC1091
+source "${XDG_DATA_HOME:-$HOME/.local/share}/grimoire/lib/utils.sh"
+
+ensure "gum"
+
+src_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+dest_dir="$HOME/.local/bin"
+
+mkdir -p "$dest_dir"
+
+for src in "$src_dir"/*; do
+  [[ -f "$src" ]] || continue
+  name="$(basename "$src")"
+  link="$dest_dir/$name"
+
+  if [[ -L "$link" ]]; then
+    if [[ "$(readlink "$link")" == "$src" ]]; then
+      log debug "Up to date" file "$name"
+    else
+      ln -sf "$src" "$link"
+      log info "Relinked" file "$name"
+    fi
+  elif [[ -e "$link" ]]; then
+    log warn "Skipped existing" file "$name"
+  else
+    ln -s "$src" "$link"
+    log info "Linked" file "$name"
+  fi
+done
